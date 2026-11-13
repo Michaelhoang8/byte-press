@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Byte Press — lossless compression</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/">BYTE PRESS</a><span>INFORMATION THEORY / 16</span
+      ><select id="example" aria-label="Compression example">
+        <option value="text">Repeated text</option>
+        <option value="uniform">Uniform byte distribution</option>
+      </select>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">LESS SPACE. THE SAME BYTES.</p>
+        <h1>Pack it. Unpack it.<br />Prove nothing changed.</h1>
+        <p>A working Huffman codec, with the packaging left in view.</p>
+      </section>
+      <div class="workspace">
+        <section>
+          <div class="source-head">
+            <h2>01 / Source</h2>
+            <select id="source-mode" aria-label="Source type">
+              <option value="text">UTF-8 text</option>
+              <option value="file">Binary file</option>
+            </select>
+          </div>
+          <textarea
+            id="text"
+            aria-label="Source text"
+            spellcheck="false"
+            rows="7"
+            maxlength="1048576"
+          ></textarea>
+          <div id="file-source" hidden>
+            <label class="drop"
+              >Choose a file to encode<input id="source-file" type="file"
+            /></label>
+            <p id="file-info">No file selected.</p>
+          </div>
+          <p id="source-info" class="hint"></p>
+          <div class="buttons">
+            <button id="encode" class="primary">Encode & verify ↗</button
+            ><button id="cancel" disabled>Cancel</button
+            ><label class="file"
+              >Open .huf to decode<input
+                id="decode-file"
+                type="file"
+                accept=".huf,application/octet-stream"
+            /></label>
+          </div>
+          <p id="status" role="status">Ready.</p>
+        </section>
+        <aside>
+          <h2>What is in the file?</h2>
+          <div class="format">
+            <span>HUF1</span><span>Length + CRC-32</span><span>256 byte frequencies</span
+            ><span>Packed Huffman bits</span>
+          </div>
+          <p class="hint">
+            A fixed 1,036-byte header plus a packed payload. Small files may grow. This is a custom
+            teaching format, not ZIP or gzip.
+          </p>
+          <p class="hint">
+            Files stay in the browser. Decoding checks the declared size, codebook, padding,
+            frequencies, and checksum before enabling a download.
+          </p>
+        </aside>
+      </div>
+      <section id="output" hidden>
+        <div class="metrics">
+          <div><span>Original bytes</span><strong id="original"></strong></div>
+          <div><span>Container bytes</span><strong id="container"></strong></div>
+          <div><span>Including the header</span><strong id="saving"></strong></div>
+        </div>
+        <div class="result-head">
+          <h2 id="result-title">02 / Encoded & verified</h2>
+          <button id="download">Download .huf</button><button id="report">Analysis JSON</button>
+        </div>
+        <div class="breakdown">
+          <p id="breakdown"></p>
+          <p id="entropy"></p>
+          <p id="checksum"></p>
+        </div>
+        <details open>
+          <summary>Decoded source preview</summary>
+          <p id="preview-label" class="hint"></p>
+          <pre id="preview"></pre>
+        </details>
+        <details>
+          <summary>The byte codebook</summary>
+          <p class="hint">
+            Frequent bytes get short codes. UTF-8 characters may occupy several bytes. The codes are
+            prefix-free; none begins with another complete code.
+          </p>
+          <input
+            id="filter"
+            aria-label="Filter codebook"
+            placeholder="Filter a byte, character, or hex value"
+          />
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Byte</th>
+                  <th>Count</th>
+                  <th>Share</th>
+                  <th>Code</th>
+                  <th>Bits</th>
+                </tr>
+              </thead>
+              <tbody id="codebook"></tbody>
+            </table>
+          </div>
+        </details>
+        <details>
+          <summary>How to read the numbers</summary>
+          <p class="hint">
+            Entropy is measured from this file’s byte frequencies. Mean code length describes the
+            Huffman payload, while container size also includes the fixed header and up to seven
+            padding bits. CRC-32 detects accidental corruption; it is not authentication or
+            encryption.
+          </p>
+        </details>
+      </section>
+      <footer>DETERMINISTIC PREFIX CODES · BYTE-EXACT ROUND TRIPS · 1 MIB INPUT LIMIT</footer>
+    </main>
+  </body>
+</html>

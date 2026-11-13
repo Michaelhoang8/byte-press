@@ -1,0 +1,13 @@
+{
+  "name": "byte-press",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check core.js && node --check worker.js && node --check app.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

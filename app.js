@@ -157,6 +157,24 @@ function display() {
   const s = result.stats;
   $('output').hidden = false;
   $('original').textContent = s.inputBytes.toLocaleString();
+  const maximum = Math.max(s.inputBytes, s.containerBytes, 1);
+  $('size-bars').replaceChildren();
+  for (const [x, y, bytes, kind] of [
+    [0, 8, s.inputBytes, 'original-bar'],
+    [0, 46, s.headerBytes, 'header-bar'],
+    [(480 * s.headerBytes) / maximum, 46, s.payloadBytes, 'payload-bar'],
+  ]) {
+    const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    for (const [name, value] of Object.entries({
+      x,
+      y,
+      width: (480 * bytes) / maximum,
+      height: 20,
+      class: kind,
+    }))
+      bar.setAttribute(name, value);
+    $('size-bars').append(bar);
+  }
   $('container').textContent = s.containerBytes.toLocaleString();
   $('saving').textContent =
     s.ratio === null
@@ -165,7 +183,7 @@ function display() {
         ? `${((1 - s.ratio) * 100).toFixed(1)}% smaller`
         : `${((s.ratio - 1) * 100).toFixed(1)}% larger`;
   $('result-title').textContent =
-    result.action === 'encode' ? '02 / Encoded & verified' : '02 / Decoded & checked';
+    result.action === 'encode' ? 'Encoded & verified' : 'Decoded & checked';
   $('download').textContent =
     result.action === 'encode' ? 'Download .huf' : 'Download decoded bytes';
   $('breakdown').textContent =
@@ -220,9 +238,8 @@ function sample() {
   } else {
     $('source-mode').value = 'text';
     $('text').value =
-      'A smaller alphabet needs fewer bits. Frequent bytes get shorter codes. A lossless file must decode to exactly the same bytes.\n'.repeat(
-        100,
-      );
+      'station,reading,status\n' +
+      Array.from({ length: 240 }, (_, i) => `station-${i % 8},${20 + (i % 5)},ok`).join('\n');
   }
   invalidate();
   $('encode').click();

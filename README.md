@@ -4,6 +4,8 @@ A working lossless Huffman file codec with a browser workbench. Encode text or b
 
 ![Byte Press](docs/workbench.png)
 
+Source and verified output are shown side by side. Size bars share one scale and separate the HUF1 header from the compressed payload, including when the container grows. The decoded preview, codebook, and format details remain available below the result. The text example contains fictional station records.
+
 ## Run
 
 ```sh
